@@ -1,0 +1,16 @@
+name: jenkins
+
+services:
+  jenkins:
+    build: .
+    # root solo en laboratorio: necesita leer /var/run/docker.sock (riesgo residual, ver informe)
+    user: root
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:

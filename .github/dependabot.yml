@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "security"]
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "docker"]
+  - package-ecosystem: "docker"
+    directory: "/monitoring/prometheus"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/monitoring/grafana"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/jenkins"
+    schedule:
+      interval: "weekly"

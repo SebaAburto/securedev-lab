@@ -1,0 +1,4 @@
+# Herramientas de prueba y análisis (solo CI, no van en la imagen)
+pytest>=8.0
+bandit>=1.7
+pip-audit>=2.7
