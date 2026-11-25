@@ -1,15 +1,55 @@
-name: securedev-estudiante
+name: securedev
 
 services:
   app:
     build: .
+    image: securedev-app:latest
     environment:
       DATABASE_PATH: /data/securedev.db
-      SECRET_KEY: clave-insegura-solo-laboratorio
+      SECRET_KEY: ${SECRET_KEY:?Define SECRET_KEY en el archivo .env}
     volumes:
       - app_data:/data
     ports:
       - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  prometheus:
+    build: ./monitoring/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - prom_data:/prometheus
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  grafana:
+    build: ./monitoring/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Define GRAFANA_ADMIN_PASSWORD en el archivo .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  default:
+    name: securedev-net
 
 volumes:
   app_data:
+  prom_data:
+  grafana_data:
