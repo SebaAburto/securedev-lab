@@ -128,7 +128,7 @@ pipeline {
       steps {
         sh '''
           docker rm -f zap-scan >/dev/null 2>&1 || true
-          docker run --name zap-scan --user root --network securedev-net ghcr.io/zaproxy/zaproxy:stable \
+          docker run --name zap-scan --user root --network securedev-net -v zap-wrk:/zap/wrk ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py -t http://app:8000 -m 2 -r zap-report.html -J zap-report.json -I || true
           docker cp zap-scan:/zap/wrk/zap-report.html reports/zap-report.html
           docker cp zap-scan:/zap/wrk/zap-report.json reports/zap-report.json
