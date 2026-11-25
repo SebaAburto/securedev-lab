@@ -1,0 +1,34 @@
+groups:
+  - name: securedev-security
+    rules:
+      - alert: PosibleFuerzaBrutaLogin
+        expr: increase(securedev_login_failures_total[1m]) >= 3
+        labels: {severity: high}
+        annotations:
+          summary: "3 o más intentos de login fallidos en 1 minuto (posible fuerza bruta)"
+      - alert: CuentaBloqueadaPorFuerzaBruta
+        expr: increase(securedev_login_blocked_total[1m]) > 0
+        labels: {severity: critical}
+        annotations:
+          summary: "El bloqueo de login se activó: ataque de fuerza bruta en curso"
+      - alert: AccesoARecursosAjenos
+        expr: sum(increase(securedev_access_denied_total[1m])) > 0
+        labels: {severity: high}
+        annotations:
+          summary: "Un usuario intentó acceder a tickets de otra persona (IDOR)"
+      - alert: PeticionesCSRFRechazadas
+        expr: increase(securedev_csrf_rejected_total[1m]) > 0
+        labels: {severity: medium}
+        annotations:
+          summary: "Se rechazaron peticiones POST sin token CSRF válido"
+      - alert: ErroresDelServidor5xx
+        expr: sum(increase(securedev_http_requests_total{status=~"5.."}[1m])) > 0
+        labels: {severity: medium}
+        annotations:
+          summary: "La aplicación devolvió errores 5xx"
+      - alert: AplicacionCaida
+        expr: up{job="securedev-app"} == 0
+        for: 15s
+        labels: {severity: critical}
+        annotations:
+          summary: "Prometheus no puede leer las métricas de la aplicación"
